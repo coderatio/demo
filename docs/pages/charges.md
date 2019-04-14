@@ -1,17 +1,17 @@
 # CHARGES
+Send card details or bank details or authorization code to start a charge.
+
+## 1. TokenizePaymentInstrument Action
 ```php
-Coderatio\PaystackMirror\Actions\Charges\...
+// Class
+Coderatio\PaystackMirror\Actions\Charges\TokenizePaymentInstrument::class
 ```
+Send an array of objects with authorization codes and amount in kobo so paystack can process transactions as a batch.
+### Body Params
 
-| Action        | Description           | Request type  |
-| ------------- |:-------------:| -----:|
-| `TokenizePaymentInstrument`      | Send an array of objects with authorization codes and amount in kobo so paystack can process transactions as a batch. | `POST` |
-| `InitializeCharge`      | Send card details or bank details or authorization code to start a charge. Simple guide to charging cards directly       |   `POST` |
-| `SubmitPinToCharge` | Submit a pin to charge from      |    `POST` |
-| `SubmitOtpToCharge` | Submit OTP to complete a charge     |    `POST` |
-| `SubmitPhoneToCharge` | Submit Phone when requested      |    `POST` |
-| `SubmitBirthdayToCharge` | Submit Birthday when requested      |    `POST` |
-| `CheckPendingCharge` | When you get `pending` as a charge status, wait 30 seconds or more, then make a check to see if its status has changed. Don't call too early as you may get a lot more pending than you should.      |    `GET` |
-
-[Read more here...](https://developers.paystack.co/v1.0/reference#charge)
-___
+* **email** (required) - Customer's email address
+* **card*** (required) - Card to tokenize
+* **card['number']** (required) - Card to tokenize
+* **card['cvv']** (required) - Card security code
+* **card['expiry_month']** (required) - Expiry month of card
+* **card['expiry_year']** (required) - Expiry year of card
