@@ -10,7 +10,7 @@ Send an array of objects with authorization codes and amount in kobo so paystack
 ### Body Params
 
 * **email** (required) - Customer's email address
-* **card*** (required) - Card to tokenize
+* **card** (required) - Card to tokenize
 * **card['number']** (required) - Card to tokenize
 * **card['cvv']** (required) - Card security code
 * **card['expiry_month']** (required) - Expiry month of card
