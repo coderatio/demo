@@ -190,6 +190,28 @@ You can overwrite all the accounts data by providing your params on the action. 
 ```
 >**Quick Note:** All the query or body params used on paystack api documentation site are all available in this library. The only different is, they must be sent as an array or as `ParamBuilder::class` object. 
 
+## Writing your action
+One good thing about this library is the ability to plug and play actions. You can replace existing actions by creating yours. 
+
+```php
+<?php
+
+use \Coderatio\PaystackMirror\Actions\Action;
+
+class MyCustomAction extends Action
+{
+    // The paystack endpoint for this action
+    protected $url = '';
+    
+    public function handle(CurlService $curlService) : void {
+        // Use the $curlService to handle this action's request.
+    }
+}
+
+``` 
+
+>Please note that `$this->data` property is an array. If you want to sent this as json to paystack, use `$this->getData()`.
+
 
 >**Notice:** You can use the `ParamsBuilder::class` to build the paramters you want to send to paystack. Take a look at below:
 
