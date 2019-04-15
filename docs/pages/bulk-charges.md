@@ -42,7 +42,7 @@ This action retrieves a specific batch code. It also returns useful information 
 ```php
 // Class
 
-Coderatio\PaystackMirror\Actions\BulkCharges\FetchChargesBatch
+Coderatio\PaystackMirror\Actions\BulkCharges\FetchChargesBatch::class
 
 ```
 This action retrieves the charges associated with a specified batch code. Pagination parameters are available. You can also filter by status. Charge statuses can be `pending`, `success` or `failed`.
