@@ -203,14 +203,15 @@ class MyCustomAction extends Action
     // The paystack endpoint for this action
     protected $url = '';
     
-    public function handle(CurlService $curlService) : void {
+    public function handle(CurlService $curlService) : void 
+    {
         // Use the $curlService to handle this action's request.
     }
 }
 
 ``` 
 
->Please note that `$this->data` property is an array. If you want to sent this as json to paystack, use `$this->getData()`.
+>Please note that `$this->data` property returns an array. If you want to send parameters as json to paystack, use `$this->getData()`.
 
 
 >**Notice:** You can use the `ParamsBuilder::class` to build the paramters you want to send to paystack. Take a look at below:
