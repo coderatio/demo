@@ -59,9 +59,8 @@ require 'venodr/autoload.php';
 use Coderatio\PaystackMirror\PaystackMirror;
 use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 
-$queryParams = [
-    'perPage' => 10
-];
+$queryParams = new ParamsBuilder();
+$queryParams->perPage = 10;
 
 $result = PaystackMirror::run(string $secretKey, new ListTransactions($queryParams));
 
@@ -77,9 +76,8 @@ require 'venodr/autoload.php';
 use Coderatio\PaystackMirror\PaystackMirror;
 use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 
-$queryParams = [
-    'perPage' => 10
-];
+$queryParams = new ParamsBuilder();
+$queryParams->perPage = 10;
 
 $result = PaystackMirror::run(string $secretKey, ListTransactions::class, $queryParams);
 
@@ -95,9 +93,8 @@ require 'venodr/autoload.php';
 use Coderatio\PaystackMirror\PaystackMirror;
 use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 
-$queryParams = [
-    'perPage' => 10
-];
+$queryParams = new ParamsBuilder();
+$queryParams->perPage = 10;
 
 $result = PaystackMirror::setKey(string $secretKey)->mirror(new ListTransactions($queryParams));
 
@@ -113,9 +110,8 @@ require 'venodr/autoload.php';
 use Coderatio\PaystackMirror\PaystackMirror;
 use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 
-$queryParams = [
-    'perPage' => 10
-];
+$queryParams = new ParamsBuilder();
+$queryParams->perPage = 10;
 
 $result = PaystackMirror::setKey(string $secretKey)->mirror(Action ListTransactions::class, $queryParams);
 
