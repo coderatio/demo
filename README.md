@@ -62,7 +62,7 @@ use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 $queryParams = new ParamsBuilder();
 $queryParams->perPage = 10;
 
-$result = PaystackMirror::run(string $secretKey, new ListTransactions($queryParams));
+$result = PaystackMirror::run($secretKey, new ListTransactions($queryParams));
 
 echo $result->getResponse();
 
@@ -79,7 +79,7 @@ use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 $queryParams = new ParamsBuilder();
 $queryParams->perPage = 10;
 
-$result = PaystackMirror::run(string $secretKey, ListTransactions::class, $queryParams);
+$result = PaystackMirror::run($secretKey, ListTransactions::class, $queryParams);
 
 echo $result->getResponse();
 
@@ -96,7 +96,7 @@ use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 $queryParams = new ParamsBuilder();
 $queryParams->perPage = 10;
 
-$result = PaystackMirror::setKey(string $secretKey)->mirror(new ListTransactions($queryParams));
+$result = PaystackMirror::setKey($secretKey)->mirror(new ListTransactions($queryParams));
 
 echo $result->getResponse();
 
@@ -113,7 +113,7 @@ use Coderatio\PaystackMirror\Actions\Transactions\ListTransactions;
 $queryParams = new ParamsBuilder();
 $queryParams->perPage = 10;
 
-$result = PaystackMirror::setKey(string $secretKey)->mirror(Action ListTransactions::class, $queryParams);
+$result = PaystackMirror::setKey($secretKey)->mirror(ListTransactions::class, $queryParams);
 
 echo $result->getResponse();
 
@@ -197,6 +197,7 @@ One good thing about this library is the ability to plug and play actions. You c
 <?php
 
 use \Coderatio\PaystackMirror\Actions\Action;
+use Coderatio\PaystackMirror\Services\CurlService;
 
 class MyCustomAction extends Action
 {
@@ -206,6 +207,9 @@ class MyCustomAction extends Action
     public function handle(CurlService $curlService) : void 
     {
         // Use the $curlService to handle this action's request.
+        // E.g to send a post request, see below:
+        
+        $curlService->post($this->url, $this->getData());
     }
 }
 
@@ -213,20 +217,111 @@ class MyCustomAction extends Action
 
 >Please note that `$this->data` property returns an array. If you want to send parameters as json to paystack, use `$this->getData()`.
 
-
->**Notice:** You can use the `ParamsBuilder::class` to build the paramters you want to send to paystack. Take a look at below:
+## Webhook Event Handling
+This library ships with a fluent Event handling class to be used at your webhook url set on your paystack dashboard. See example below on how to listen to different events.
 
 ```php
+<?php
 
-    $postParams = new ParamsBuilder();
-    $postParams->email = 'example@email.com';
-    $postParams->first_name = 'Josiah';
-    $postParams->last_name = 'Yahaya';
-    $postParams->reference = PaystackMirror::generateReference();
-    $postParams->amount = PaystackMirror::shortNairaToKobo('25k');
-    
-    // Then pass it to your action
-    
-    PaystackMirror::setKey($yourKey)->mirror(new InitializeTransaction($postParams));
-  
+use Coderatio\PaystackMirror\Events\Event;
+
+// $secretKeys array structure should be like this:
+$secretKeys = [
+    'test' => 'sk_testxxxxxxxxxxxxx',
+    'live' => 'sk_live_xxxxxxxxxxxxxx'
+];
+
+$eventData = Event::capture()->thenValidate(string $secretKey or array $secretKeys)
+    ->thenListenOn('subscription.create')->thenGetData();
+
+// Do something with the $eventData
+
 ```
+## Writing a separate event class
+With this library, you can write a separate event class for a single event. For example, the `subscription.create` event can be created like this:
+```php
+<?php
+
+namespace Coderatio\PaystackMirror\Events;
+
+class SubscriptionCreated implements ActionEvent
+{
+    public static function validate($keys): Event
+    {
+        return Event::capture()->thenValidate($keys)
+            ->thenListenOn('subscription.create');
+    }
+}
+
+```
+
+This can then be used like this:
+
+```php
+<?php
+
+use Coderatio\PaystackMirror\Events\SubscriptionCreated;
+
+$eventData = SubscriptionCreated::validate($key)->thenGetData();
+
+// Or 
+
+$event = SubscriptionCreated::validate($key)->thenGetEvent();
+
+```
+Here, you can see that we are just implementing the `ActionEvent::class` interface and extending the `Event::class` on the `::validate()` method.
+
+## Addons
+The library has a few of in-built functionalities to do somethings quicker and better. Let's take a look at them:
+
+#### 1. Nairas to kobo
+Since paystack accepts amount in kobo only, there should be a quick way to do that. Below are helper functions to help you out.
+```php
+<?php
+
+// Normal naira amount to kobo
+$amount = naira_to_kobo('1000'); // Returns: 100000
+
+// Naira with commas
+$amount = naira_to_kobo('1,000'); // Returns: 100000
+
+// Human readable nairas to kobo
+$amount = short_naira_to_kobo('2k'); // Returns: 200000
+
+$amount = short_naira_to_kobo('1.5m'); // Returns: 150000000
+
+``` 
+>**Note:** The `short_naira_to_kobo()` helper function, supports only `k` as thousands, `m` as millions, `b` as billions and `t` as trillions notations.
+
+#### 2. Reference Generator
+You can easily generate especially, transaction reference easily by doing this:
+
+```php
+<?php
+
+use \Coderatio\PaystackMirror\PaystackMirror;
+
+$reference = PaystackMirror::generateReference();
+
+```
+
+## Todo
+1. Build a dedicated docs site
+
+## Tests
+```bash
+composer test
+
+// OR
+
+./vendor/bin/phpunit
+```
+
+## Contributions
+Correcting a typographical error is a huge a contribution to this project. Do well to do that. You can fork the repo and send pull request or reach out easily to me via twitter here => [Josiah Ovye Yahaya](https://twitter.com/josiahoyahaya).
+
+## Collaborators
+1. [Josiah O. Yahaya](http://github.com/coderatio)
+
+## Licence
+This project is built and used with `GPL` licence.
